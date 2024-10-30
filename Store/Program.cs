@@ -1,9 +1,14 @@
 
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Store.Core;
 using Store.Core.Mapping.Products;
 using Store.Core.Services.Contract;
+using Store.Error;
+using Store.Helper;
+using Store.Middlewares;
 using Store.Repositorty;
 using Store.Repositorty.Data;
 using Store.Repositorty.Data.Contexts;
@@ -19,45 +24,15 @@ namespace Store
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddDependancy(builder.Configuration);
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContext<StoreDBContext>(option =>
-            {
-                option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-            builder.Services.AddScoped<IProductService, ProductService>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddAutoMapper(m => m.AddProfile(new ProductProfile()));
+
+
+
+           
             var app = builder.Build();
-            using var scope= app.Services.CreateScope();
-            var services= scope.ServiceProvider;
-            var context= services.GetRequiredService<StoreDBContext>();
-            var loggerFactory= services.GetRequiredService<ILoggerFactory>();
-            try
-            {
-                await context.Database.MigrateAsync();
-                await StoreDbContextSeed.SeedAsync(context);
-            }
-            catch (Exception ex)
-            {
-                var logger= loggerFactory.CreateLogger<Program>();
-                logger.LogError(ex, "ther are problems during apply migrations");
-            }
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
+            app.UseCors("AllowLocalhost");
+            await app.ConfigureMiddlewareAsync();
 
             app.Run();
         }

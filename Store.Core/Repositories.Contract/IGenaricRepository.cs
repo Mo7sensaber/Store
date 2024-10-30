@@ -1,4 +1,7 @@
 ﻿using Store.Core.Entities;
+using Store.Core.Entities.Order;
+using Store.Core.Specifications;
+using Store.Core.Specifications.OrdersSpes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +14,12 @@ namespace Store.Core.Repositories.Contract
     {
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<TEntity> GetAsync(TKey id);
+        Task<IEnumerable<TEntity>> GetAllWithSpacAsync(ISpecifications<TEntity,TKey> spac);
+        Task<TEntity> GetWithSpacAsync(ISpecifications<TEntity, TKey> spac);
+        Task<int> GetCountAsync(ISpecifications<TEntity, TKey> spac);
         Task AddAsync(TEntity entity);
         void Update(TEntity entity);
         void Delete(TEntity id);
-
+        
     }
 }

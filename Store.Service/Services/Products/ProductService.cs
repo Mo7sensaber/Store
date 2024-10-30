@@ -2,7 +2,10 @@
 using Store.Core;
 using Store.Core.Dtos.Products;
 using Store.Core.Entities;
+using Store.Core.Helper;
 using Store.Core.Services.Contract;
+using Store.Core.Specifications;
+using Store.Core.Specifications.Product;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,9 +32,14 @@ namespace Store.Service.Services.Products
             return mappedBrands;
         }
 
-        public async Task<IEnumerable<ProductDtos>> GetAllProductsAsync()
+        public async Task<PaginationResponse<ProductDtos>> GetAllProductsAsync(ProductSpaceParams productSpace)
         {
-            return _mapper.Map<IEnumerable<ProductDtos>>(await _unitOfWork.Repository<Product, int>().GetAllAsync());
+            var spec = new ProductSpecification(productSpace);
+            var mapProduct = _mapper.Map<IEnumerable<ProductDtos>>(await _unitOfWork.Repository<Product, int>().GetAllWithSpacAsync(spec));
+            var countSpace = new ProductWithCountSpecifcation(productSpace);
+            var count = await _unitOfWork.Repository<Product, int>().GetCountAsync(countSpace);
+
+            return new PaginationResponse<ProductDtos>(productSpace.PageSize, productSpace.PageIndaex, count, mapProduct);
             
         }
 
@@ -42,7 +50,9 @@ namespace Store.Service.Services.Products
 
         public async Task<ProductDtos> GetProductById(int id)
         {
-            var product= await _unitOfWork.Repository<Product,int>().GetAsync(id);
+            var spec = new ProductSpecification(id);
+
+            var product = await _unitOfWork.Repository<Product,int>().GetWithSpacAsync(spec);
             var mappedProduct= _mapper.Map<ProductDtos>(product);
             return mappedProduct;
         }

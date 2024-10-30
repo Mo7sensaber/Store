@@ -1,5 +1,7 @@
 ﻿using Store.Core.Dtos.Products;
 using Store.Core.Entities;
+using Store.Core.Helper;
+using Store.Core.Specifications.Product;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,7 @@ namespace Store.Core.Services.Contract
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductDtos>> GetAllProductsAsync();
+        Task<PaginationResponse<ProductDtos>> GetAllProductsAsync(ProductSpaceParams productSpace);
         Task<IEnumerable<TypeBrandDtos>> GetAllTypesAsync();
         Task<IEnumerable<TypeBrandDtos>> GetAllBrandsAsync();
         Task<ProductDtos> GetProductById(int id);

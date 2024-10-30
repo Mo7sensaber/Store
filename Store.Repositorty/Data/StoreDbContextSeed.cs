@@ -1,4 +1,5 @@
 ﻿using Store.Core.Entities;
+using Store.Core.Entities.Order;
 using Store.Repositorty.Data.Contexts;
 using System;
 using System.Collections.Generic;
@@ -31,13 +32,24 @@ namespace Store.Repositorty.Data
                     await _context.Types.AddRangeAsync(types);
                 }
             }
-            if (_context.products.Count() == 0)
+            if (_context.Products.Count() == 0)
             {
                 var productsData = File.ReadAllText(@"..\Store.Repositorty\Data\DataSeed\products.json");
                 var products = JsonSerializer.Deserialize<List<Product>>(productsData);
                 if (products is not null && products.Count() > 0)
                 {
-                    await _context.products.AddRangeAsync(products);
+                    await _context.Products.AddRangeAsync(products);
+                }
+            }
+            if (_context.DelevaryMethods.Count() == 0)
+            {
+                var delivaryData = File.ReadAllText(@"..\Store.Repositorty\Data\DataSeed\delivery.json");
+                var delevaryMethod = JsonSerializer.Deserialize<List<DelevaryMethod>>(delivaryData);
+                if (delevaryMethod is not null && delevaryMethod.Count() > 0)
+                {
+                    await _context.DelevaryMethods.AddRangeAsync(delevaryMethod);
+                    await _context.SaveChangesAsync();
+
                 }
             }
             await _context.SaveChangesAsync();

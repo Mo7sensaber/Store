@@ -22,6 +22,103 @@ namespace Store.Repositorty.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Store.Core.Entities.Order.DelevaryMethod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DelevaryTime")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DelevaryMethods");
+                });
+
+            modelBuilder.Entity("Store.Core.Entities.Order.OrderItems", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("OrdersId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrdersId");
+
+                    b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("Store.Core.Entities.Order.Orders", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BuyerEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DeliveryMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("OrderDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("PaymentIntentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeliveryMethodId");
+
+                    b.ToTable("Orders");
+                });
+
             modelBuilder.Entity("Store.Core.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -104,6 +201,87 @@ namespace Store.Repositorty.Data.Migrations
                     b.ToTable("Types");
                 });
 
+            modelBuilder.Entity("Store.Core.Entities.Order.OrderItems", b =>
+                {
+                    b.HasOne("Store.Core.Entities.Order.Orders", null)
+                        .WithMany("Items")
+                        .HasForeignKey("OrdersId");
+
+                    b.OwnsOne("Store.Core.Entities.Order.ProductItemOrder", "product", b1 =>
+                        {
+                            b1.Property<int>("OrderItemsId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("PictureURL")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int>("ProductId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("ProductName")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("OrderItemsId");
+
+                            b1.ToTable("Items");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderItemsId");
+                        });
+
+                    b.Navigation("product")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Store.Core.Entities.Order.Orders", b =>
+                {
+                    b.HasOne("Store.Core.Entities.Order.DelevaryMethod", "DeliveryMethod")
+                        .WithMany()
+                        .HasForeignKey("DeliveryMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Store.Core.Entities.Order.Address", "ShippingAddress", b1 =>
+                        {
+                            b1.Property<int>("OrdersId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("FName")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("LName")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("OrdersId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrdersId");
+                        });
+
+                    b.Navigation("DeliveryMethod");
+
+                    b.Navigation("ShippingAddress")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Store.Core.Entities.Product", b =>
                 {
                     b.HasOne("Store.Core.Entities.ProductBrand", "Brand")
@@ -119,6 +297,11 @@ namespace Store.Repositorty.Data.Migrations
                     b.Navigation("Brand");
 
                     b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("Store.Core.Entities.Order.Orders", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

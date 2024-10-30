@@ -22,4 +22,9 @@
     <ProjectReference Include="..\Store.Core\Store.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Identity\Configurations\" />
+    <Folder Include="Identity\DataSeed\" />
+  </ItemGroup>
+
 </Project>
