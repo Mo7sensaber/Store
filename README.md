@@ -1,9 +1,5 @@
 # 🛒 Store API - Backend System
 
-![Node.js](https://img.shields.io/badge/Node.js-LTS-green)
-![Express.js](https://img.shields.io/badge/Express.js-Framework-lightgrey)
-![Database](https://img.shields.io/badge/Database-PostgreSQL/MongoDB-blue)
-
 A robust and scalable RESTful API built to power an E-commerce platform. This system handles complex business logic, user authentication, and inventory management.
 
 ## 🚀 Key Features
